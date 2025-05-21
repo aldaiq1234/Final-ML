@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Titanic Survival Predictor</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Titanic Survival Predictor</h1>
+    <form id="predict-form">
+      <label for="Pclass">Passenger Class (1,2,3):</label>
+      <input type="number" id="Pclass" name="Pclass" required min="1" max="3" />
+      <label for="Age">Age:</label>
+      <input type="number" step="0.01" id="Age" name="Age" required />
+      <label for="SibSp">Siblings/Spouses Aboard:</label>
+      <input type="number" id="SibSp" name="SibSp" required min="0" />
+      <label for="Parch">Parents/Children Aboard:</label>
+      <input type="number" id="Parch" name="Parch" required min="0" />
+      <label for="Fare">Fare:</label>
+      <input type="number" step="0.01" id="Fare" name="Fare" required min="0" />
+      <label for="Sex_male">Sex:</label>
+      <select id="Sex_male" name="Sex_male">
+        <option value="1">Male</option>
+        <option value="0">Female</option>
+      </select>
+      <label for="Embarked_C">Embarked C:</label>
+      <select id="Embarked_C" name="Embarked_C">
+        <option value="1">Yes</option>
+        <option value="0" selected>No</option>
+      </select>
+      <label for="Embarked_Q">Embarked Q:</label>
+      <select id="Embarked_Q" name="Embarked_Q">
+        <option value="1">Yes</option>
+        <option value="0" selected>No</option>
+      </select>
+      <label for="Embarked_S">Embarked S:</label>
+      <select id="Embarked_S" name="Embarked_S">
+        <option value="1">Yes</option>
+        <option value="0" selected>No</option>
+      </select>
+      <button type="submit">Predict</button>
+    </form>
+    <div id="result"></div>
+  </div>
+  <script>
+    const form = document.getElementById('predict-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((v,k) => data[k] = isNaN(v) ? v : parseFloat(v));
+      const response = await fetch('/predict/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      document.getElementById('result').innerText = `Survived: ${result.survived ? 'Yes' : 'No'} (Probability: ${result.probability})`;
+    });
+  </script>
+</body>
+</html>
